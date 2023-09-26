@@ -104,7 +104,7 @@ void Form::on_pbloadfile_clicked()
 
     ui->lbfilename->setText(fileNameIn);
     ui->lbfilepath->setText(inputFilePath);
-
+    setWindowTitle(inputFilePath);
 
 
 
