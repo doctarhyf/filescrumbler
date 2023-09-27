@@ -10,6 +10,10 @@
 #include <QDebug>
 #include <QtCore>
 #include <QMessageBox>
+#include <QtMath>
+
+#include "dialogabout.h"
+
 
 namespace Ui {
 class Form;
@@ -32,6 +36,8 @@ private slots:
 
     void on_rbunscrumble_toggled(bool checked);
 
+    void on_pbabout_clicked();
+
 private:
     Ui::Form *ui;
     int operation;
@@ -39,6 +45,7 @@ private:
     QFile inputfile, outputfile;
     void scrambleFile(const QString& inputFileName, const QString& outputFileName, const QString& password);
     void unscrambleFile(const QString& inputFileName, const QString& outputFileName, const QString& password);
+    DialogAbout dialogabout;
 
 };
 

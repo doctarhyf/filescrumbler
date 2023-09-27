@@ -9,6 +9,7 @@ Form::Form(QWidget *parent) :
 {
     ui->setupUi(this);
     operation = OP_SCRUMBLRE;
+    setWindowTitle("File Scrumbler 1.0 - Demo");
 }
 
 Form::~Form()
@@ -19,9 +20,22 @@ Form::~Form()
 void Form::on_pbprocess_clicked()
 {
     QFile in(inputFilePath);
+
+    QStringList splits = inputFilePath.split("/");
+    splits[splits.length() -1] = ui->leoutputfilename->text();
+    outputFilePath = splits.join("/");
     QFile out(outputFilePath);
 
 
+   QFile file(outputFilePath);
+
+   if(file.exists()){
+
+   int res =  QMessageBox::critical( this, tr("Output file exists!"),  "The file at path: \n\"" + outputFilePath + "\n\" already exists, overwrite?", QMessageBox::Yes | QMessageBox::No);
+
+   if(res == QMessageBox::No) return;
+
+   }
 
     if(in.open(QIODevice::ReadOnly) && out.open(QIODevice::WriteOnly)){
 
@@ -50,6 +64,11 @@ void Form::on_pbprocess_clicked()
 
 void Form::scrambleFile(const QString& inputFileName, const QString& outputFileName, const QString& password){
     QFile inputFile(inputFileName);
+
+    qInfo() << "size :" << inputFile.size();
+    ui->progressBar->setMaximum(inputFile.size());
+    int bytescount = 0;
+
        QFile outputFile(outputFileName);
 
        qDebug() << "Operation";
@@ -70,10 +89,16 @@ void Form::scrambleFile(const QString& inputFileName, const QString& outputFileN
 
            for (int i = 0; i < inputBuffer.size(); ++i) {
                outputBuffer[i] = inputBuffer[i] ^ passwordHash[i % passwordHash.size()];
-           }
+                bytescount++;
+                ui->progressBar->setValue(bytescount);
+            }
 
+
+           qInfo() << "i : " << bytescount;
            outputFile.write(outputBuffer);
        }
+
+       QMessageBox::information(this, "Operation complete", "The operation has been completed!");
 
        inputFile.close();
        outputFile.close();
@@ -87,13 +112,26 @@ void Form::on_pbloadfile_clicked()
     inputFilePath = QFileDialog::getOpenFileName(this, "Select file ...", "/home/doctarhyf/Desktop/tmp/");
     QStringList splits = inputFilePath.split("/");
     fileNameIn = splits.at(splits.length()-1);
+    ui->leoutputfilename->setText(fileNameIn + ".scr");
+
+    QFileInfo fileInfo(inputFilePath);
+    ui->lbfilesize->setText(QString::number(  qCeil((fileInfo.size() / 1000000.0f) * 10 ) / 10.0f  ) + " Mb.");
+
+
 
     QString op = "scr_";
 
-    if(operation == OP_UNSCRUMBLE) op = "uns_";
-
-    fileNameOut = op + fileNameIn;
+    fileNameOut = ui->leoutputfilename->text();
     outputFilePath = "/home/doctarhyf/Desktop/tmp/" + fileNameOut;
+
+    if(operation == OP_UNSCRUMBLE) {
+
+
+        op = "uns_";
+
+    }
+
+
 
     if(inputFilePath.isEmpty()){
         QMessageBox::critical(this, "Error selecting input file", "Please select an input file");
@@ -120,5 +158,12 @@ void Form::on_rbscrumble_toggled(bool checked)
 void Form::on_rbunscrumble_toggled(bool checked)
 {
     operation = checked ? 0 : 1;
+}
+
+
+void Form::on_pbabout_clicked()
+{
+    dialogabout.setModal(true);
+    dialogabout.show();
 }
 

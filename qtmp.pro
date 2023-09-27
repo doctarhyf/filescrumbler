@@ -9,22 +9,22 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    dialogabout.cpp \
     form.cpp \
-    formtext.cpp \
-    main.cpp \
-    widget.cpp
+    main.cpp
 
 HEADERS += \
-    form.h \
-    formtext.h \
-    widget.h
+    dialogabout.h \
+    form.h
 
 FORMS += \
-    form.ui \
-    formtext.ui \
-    widget.ui
+    dialogabout.ui \
+    form.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    res.qrc
